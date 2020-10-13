@@ -15,20 +15,45 @@ class bd:
         
     def createTablesMonths(self, m):
         #CRIAR TABELAS DE MESES
-        command = 'CREATE TABLE {} (data DATE, hora TEXT, servico TEXT, valor REAL, valor_manutecao REAL)'.format(m)
+        command = 'CREATE TABLE {} (data DATE, hora TEXT, servico TEXT, nome_cliente TEXT, valor REAL, valor_manutecao REAL)'.format(m)
         
         self.cur.execute(command)
         self.conection.commit()
 
-    def insertService(self, m, data, hora, servico, valor, valorManutencao):
+    def insertService(self, m, data, hora, servico, nomeCliente, valor, valorManutencao):
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = 'INSERT INTO {} (data, hora, servico, valor, valor_manutecao) VALUES("{}", "{}", "{}", {}, {})'.format(self.months[m], data, hora, servico, valor, valorManutencao)
+        command = 'INSERT INTO {} (data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES("{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], data, hora, servico, nomeCliente, valor, valorManutencao)
         
         self.cur.execute(command)
         self.conection.commit()
 
-a = bd()
-a.createTablesMonths('NOVEMBRO')
-#a.insertService(11, '15/10/2020', '10:00', 'UNHA', 20, 5)
+    def getService(self, day, month, year):
 
+        #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
+        show = "SELECT * FROM {} WHERE data = '{}/{}/{}'".format(self.months[month-1], day, month, year)
+        #print(show)
+
+        self.cur.execute(show)
+        service = self.cur.fetchall()
+
+        return service
+
+    def verifyServiceDate(self, day, month, year):
+
+        #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
+        show = "SELECT * FROM {} WHERE data = '{}/{}/{}'".format(self.months[month-1], day, month, year)
+
+        self.cur.execute(show)
+        service = self.cur.fetchall()
+
+        #CASO EXISTA ALGUM SERVICO
+        return len(service) != 0
+
+a = bd()
+#for i in a.months:
+#    a.createTablesMonths(i)
+#a.insertService(10, '15/10/2020', '10:00', 'UNHA', 'Igor Santos', 20, 5)
+#a.insertService(10, '15/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)
+#print(a.getService(15, 10, 2020))
+#print(a.verifyServiceDate(20, 10, 2020))
