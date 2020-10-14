@@ -2,8 +2,10 @@ from tkinter import *
 from serviceSystem import bd
 from datetime import date
 import calendar
+from tkinter import ttk
+from tkinter import messagebox
 
-class serviceSystem:
+class serviceSystem(Frame):
 
     def __init__(self):
         #OBJETO DE BANCO DE DADOS
@@ -44,6 +46,16 @@ class serviceSystem:
         self.currentMonth = self.month
         self.currentYear = date.today().year
 
+        #TUPLA DE SERVICOS
+        self.tuplaServices = (  'UNHAS MÃO',
+                                'UNHAS PÉ',
+                                'UNHAS PÉ E MÃO',
+                                'UNHAS EM GEL',
+                                'UNHAS ALONGAMENTO',
+                                'SOBRANCELHA NORMAL',
+                                'SOBRANCELHA NA RENA'
+                            )
+
         self.windowService()
     
     def windowService(self):
@@ -63,7 +75,130 @@ class serviceSystem:
         #BOTOES PARA ALTERAR OS MESES
         self.changeMonths()
 
+        #PRESSIONAR F2 PARA CRIAR POST IT
+        self.windowMain.bind("<F2>", self.keyPressed)
+
         self.windowMain.mainloop()
+
+    def keyPressed(self, event):
+        l = event.keysym
+
+        #PRESSIONAR F2
+        if l == 'F2':
+            #CRIAR NOVO SERVICO
+            self.AddNewServices()
+
+    def AddNewServices(self):
+
+        self.windowAddSerivice = Tk()
+        self.windowAddSerivice.geometry('480x260+10+10')
+        self.windowAddSerivice.resizable(False, False)
+        self.windowAddSerivice.title('CREATE NEW SERVICE')
+        self.windowAddSerivice['bg'] = self.colorBackground
+
+        #Data
+        lblData = Label(self.windowAddSerivice, text='Data:', bg=self.colorBackground)
+        lblData.place(x=10, y=20)
+
+        comboData = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboData['values'] = tuple(['{}'.format(i) for i in range(1, 32)])
+        comboData.current(self.day-1)
+        comboData.place(x=10, y=40)
+
+        #Mes
+        lblMes = Label(self.windowAddSerivice, text='Mês:', bg=self.colorBackground)
+        lblMes.place(x=130, y=20)
+
+        comboMes = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboMes['values'] = tuple(['{}'.format(i) for i in range(1, 13)])
+        comboMes.current(self.month-1)
+        comboMes.place(x=130, y=40)
+
+        #Ano
+        lblAno = Label(self.windowAddSerivice, text='Ano:', bg=self.colorBackground)
+        lblAno.place(x=250, y=20)
+
+        comboAno = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+        comboAno.current(0)
+        comboAno.place(x=250, y=40)
+        
+        #Hora
+        lblHora = Label(self.windowAddSerivice, text='Hora:', bg=self.colorBackground)
+        lblHora.place(x=370, y=20)
+
+        comboHora = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboHora['values'] = ('7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00')
+        comboHora.current(0)
+        comboHora.place(x=370, y=40)
+
+        #SERVICO
+        lblServico = Label(self.windowAddSerivice, text='Serviço:', bg=self.colorBackground)
+        lblServico.place(x=10, y=80)
+        
+        comboServico = ttk.Combobox(self.windowAddSerivice, width = 23) 
+
+        comboServico['values'] = self.tuplaServices
+        comboServico.current(2)
+        comboServico.place(x=10, y=100)
+
+        #NOME DO CLIENTE
+        lblNomeCliente = Label(self.windowAddSerivice, text='Nome do Cliente:', bg=self.colorBackground)
+        lblNomeCliente.place(x=250, y=80)
+
+        etNomeCliente = Entry(self.windowAddSerivice, width=24)
+        etNomeCliente.place(x=250, y=100)
+
+        #VALOR
+        lblValor = Label(self.windowAddSerivice, text='Valor:', bg=self.colorBackground)
+        lblValor.place(x=10, y=140)
+        
+        comboValor = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboValor['values'] = tuple([i for i in range(5, 60, 5)])
+        comboValor.current(3)
+        comboValor.place(x=10, y=160)
+
+        #PORCENTAGEM PARA MANUTENÇÃO
+        lblValorManutencao = Label(self.windowAddSerivice, text='Manutenção:', bg=self.colorBackground)
+        lblValorManutencao.place(x=130, y=140)
+        
+        comboValorManutencao = ttk.Combobox(self.windowAddSerivice, width = 8) 
+
+        comboValorManutencao['values'] = tuple(['{}%'.format(i) for i in range(10, 100, 10)])
+        comboValorManutencao.current(2)
+        comboValorManutencao.place(x=130, y=160)
+
+        def insertDataBase():
+            #a.insertService(10, '13/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)
+
+            try:
+                mes = int(comboMes.get())
+                data = '{}/{}/{}'.format(comboData.get(), mes, comboAno.get())
+                hora = comboHora.get()
+                servico = comboServico.get()
+                cliente = etNomeCliente.get().upper()
+                valor = float(comboValor.get())
+                manutencao = (int(comboValorManutencao.get().replace('%','')) / 10) * valor
+                
+                #INSERIR DADOS NO BANCO DE DADOS
+                self.bancoDados.insertService(mes, data, hora, servico, cliente, valor, manutencao)
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('','SERVIÇO ADICIONADO COM SUCESSO !')
+            
+            except:
+                messagebox.showerror('','OCORREU UM ERRO!')
+
+        #CRIAR NOVO SERVICO
+        btCreate = Button(self.windowAddSerivice, text='SALVAR', bg='MediumSpringGreen', command=insertDataBase)
+        btCreate.place(x=370, y=200)
+
+        self.windowAddSerivice.mainloop()
 
     def setTitleMonth(self):
         
@@ -103,16 +238,13 @@ class serviceSystem:
 
         #ADIANTAR UM MES
         btRight = Button(self.windowMain, text='>', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: nextMonth())
-        btRight.place(x=620, y=430)
+        btRight.place(x=575, y=430)
 
         #VOLTAR UM MES
         btLeft = Button(self.windowMain, text='<', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: prevMonth())
-        btLeft.place(x=575, y=430)
+        btLeft.place(x=530, y=430)
     
     def daysMonth(self, d, m, y):
-        
-        print(m)
-
         #CRIA O CALENDARIO
         cal_x = calendar.month(int(y),int(m),w = 2, l = 1)
 
