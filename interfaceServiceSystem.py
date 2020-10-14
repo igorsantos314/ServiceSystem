@@ -60,14 +60,58 @@ class serviceSystem:
         #SETAR BOTOES
         self.createRangeButtons()
 
+        #BOTOES PARA ALTERAR OS MESES
+        self.changeMonths()
+
         self.windowMain.mainloop()
 
     def setTitleMonth(self):
+        
+        #DATA E ANO ATUAL
+        data = '{} - {}'.format(self.bancoDados.months[self.currentMonth-1], self.currentYear)
 
-        self.lblMonth = Label(self.windowMain, text=self.bancoDados.months[self.currentMonth-1], font=self.fontStyleUpper, bg=self.colorNameMonth, fg='white', width=24, height=2)
+        self.lblMonth = Label(self.windowMain, text=data, font=self.fontStyleUpper, bg=self.colorNameMonth, fg='white', width=24, height=2)
         self.lblMonth.pack(pady=30)
 
+    def changeMonths(self):
+
+        def nextMonth():
+            
+            #VERIFICA SE ESTA EM DEZEMBRO E AVANÇA UM ANO
+            if self.currentMonth == 12:
+                self.currentMonth = 1
+                self.currentYear += 1
+            
+            else:
+                self.currentMonth += 1
+            
+            #ATUALIZAR O CALENDARIO COM O MES CORRENTE
+            self.refreshCalendar()
+
+        def prevMonth():
+
+            #VERIFICA SE ESTA EM JANEIRO E VOLTA UM ANO ATRAS
+            if self.currentMonth == 1:
+                self.currentMonth = 12
+                self.currentYear -= 1
+            
+            else:
+                self.currentMonth -= 1
+
+            #ATUALIZAR O CALENDARIO COM O MES CORRENTE
+            self.refreshCalendar()
+
+        #ADIANTAR UM MES
+        btRight = Button(self.windowMain, text='>', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: nextMonth())
+        btRight.place(x=620, y=430)
+
+        #VOLTAR UM MES
+        btLeft = Button(self.windowMain, text='<', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: prevMonth())
+        btLeft.place(x=575, y=430)
+    
     def daysMonth(self, d, m, y):
+        
+        print(m)
 
         #CRIA O CALENDARIO
         cal_x = calendar.month(int(y),int(m),w = 2, l = 1)
@@ -105,9 +149,13 @@ class serviceSystem:
                     #COR PADRAO DO BOTAO
                     backgroundButton = self.colorButtons
 
-                    #CASO EXISTA ALGUMA TAREFA MUDAR A COR DE FUNDO
-                    if self.bancoDados.verifyServiceDate(j, self.currentMonth, self.currentYear):
+                    #INDICAR A DATA ATUAL
+                    if j == int(self.day):
                         backgroundButton = 'Tomato'
+
+                    #CASO EXISTA ALGUMA TAREFA MUDAR A COR DE FUNDO
+                    elif self.bancoDados.verifyServiceDate(j, self.currentMonth, self.currentYear):
+                        backgroundButton = 'MediumSpringGreen'
 
                     #CRIA O SERVICO NO QUADRO
                     btTemp = self.createButton(j, posX, posY, backgroundButton)
@@ -179,6 +227,20 @@ class serviceSystem:
         #CRIAR O BOTAO DE EDICAO
         btEdit = Button(self.windowDay, bg=self.colorNameMonth, font=self.fontDefault)
         btEdit.place(x=posXEdit, y=posYEdit)
+
+    def refreshCalendar(self):
+
+        for lista in self.buttonsDays:
+
+            for days in lista:
+                #APAGA TODOS OS BOTOES
+                days.destroy()
+
+        #RECRIAR BOTOES COM O MES CORRENTE
+        self.createRangeButtons()
+        
+        #ATUALIZA O NOME DO MÊS E O ANO ATUAL
+        self.lblMonth['text'] = '{} - {}'.format(self.bancoDados.months[self.currentMonth-1], self.currentYear)
 
 if __name__ == "__main__":
     serviceSystem()    
