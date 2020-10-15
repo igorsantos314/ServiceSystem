@@ -4,12 +4,16 @@ from datetime import date
 import calendar
 from tkinter import ttk
 from tkinter import messagebox
+from plotGraphs import plotGraphs
 
 class serviceSystem(Frame):
 
     def __init__(self):
         #OBJETO DE BANCO DE DADOS
         self.bancoDados = bd()
+
+        #OBEJTO DE CRIAÇÃO DE GRAFICOS
+        self.setGrafico = plotGraphs()
 
         #BOTOES COM OS DATAS DE CADA MES
         self.buttonsDays = []
@@ -77,6 +81,9 @@ class serviceSystem(Frame):
 
         #PRESSIONAR F2 PARA CRIAR POST IT
         self.windowMain.bind("<F2>", self.keyPressed)
+        self.windowMain.bind("<F3>", self.keyPressed)
+        self.windowMain.bind("<F4>", self.keyPressed)
+        self.windowMain.bind("<F5>", self.keyPressed)
 
         self.windowMain.mainloop()
 
@@ -87,6 +94,18 @@ class serviceSystem(Frame):
         if l == 'F2':
             #CRIAR NOVO SERVICO
             self.AddNewServices()
+
+        elif l == 'F3':
+            #ADICIONAR CUSTO EM SERVIÇOS
+            self.gastos()
+
+        elif l == 'F4':
+            #ADICIONAR CUSTO EM SERVIÇOS
+            self.plotGraphVisaoNegocio()
+
+        elif l == 'F5':
+            #CASO O USUARIO PRESSIONE F5
+            self.refreshCalendar()
 
     def AddNewServices(self):
 
@@ -174,8 +193,7 @@ class serviceSystem(Frame):
         comboValorManutencao.place(x=130, y=160)
 
         def insertDataBase():
-            #a.insertService(10, '13/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)
-
+            
             try:
                 mes = int(comboMes.get())
                 data = '{}/{}/{}'.format(comboData.get(), mes, comboAno.get())
@@ -190,6 +208,9 @@ class serviceSystem(Frame):
 
                 #MENSAGEM DE SUCESSO
                 messagebox.showinfo('','SERVIÇO ADICIONADO COM SUCESSO !')
+
+                #LIMPAR NOME DO CLIENTE
+                etNomeCliente.delete(0, END)
             
             except:
                 messagebox.showerror('','OCORREU UM ERRO!')
@@ -373,6 +394,57 @@ class serviceSystem(Frame):
         
         #ATUALIZA O NOME DO MÊS E O ANO ATUAL
         self.lblMonth['text'] = '{} - {}'.format(self.bancoDados.months[self.currentMonth-1], self.currentYear)
+
+    def gastos(self):
+
+        self.windowGastos = Tk()
+        self.windowGastos.geometry('360x140+10+10')
+        self.windowGastos.resizable(False, False)
+        self.windowGastos.title('ADD NEW SPENDING')
+        self.windowGastos['bg'] = self.colorBackground
+
+        #Itens
+        lblItens = Label(self.windowGastos, text='Itens:', bg=self.colorBackground)
+        lblItens.place(x=10, y=20)
+
+        etItens = Entry(self.windowGastos)
+        etItens.place(x=10, y=40)
+
+        #Valor
+        lblValor = Label(self.windowGastos, text='Valor R$:', bg=self.colorBackground)
+        lblValor.place(x=180, y=20)
+
+        etValor = Entry(self.windowGastos)
+        etValor.place(x=180, y=40)
+
+        def insertDataBase():
+            
+            try:
+                itens = etItens.get().upper()
+                valor = float(etValor.get())
+
+                #ADICIONAR GASTO NA BASE DE DADOS
+                self.bancoDados.insertGastos(itens, valor)
+
+                messagebox.showinfo('', 'GASTO ADICIONADO COM SUCESSO !')
+
+                #LIMPAR CAMPOS
+                etValor.delete(0, END)
+                etItens.delete(0, END)
+
+                etItens.focus()
+
+            except:
+                messagebox.showerror('', 'OCORREU UM ERRO !')
+
+        #CRIAR NOVO GASTO
+        btCreate = Button(self.windowGastos, text='SALVAR', bg='MediumSpringGreen', command=insertDataBase)
+        btCreate.place(x=10, y=80)
+
+        self.windowGastos.mainloop()
+
+    def plotGraphVisaoNegocio(self):
+        pass
 
 if __name__ == "__main__":
     serviceSystem()    

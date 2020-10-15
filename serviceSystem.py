@@ -20,10 +20,24 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    def createTablesGastos(self):
+        #CRIAR TABELAS DE GASTOS
+        command = 'CREATE TABLE GASTOS (itens TEXT, valor REAL)'
+        
+        self.cur.execute(command)
+        self.conection.commit()
+
     def insertService(self, m, data, hora, servico, nomeCliente, valor, valorManutencao):
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
         command = 'INSERT INTO {} (data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES("{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], data, hora, servico, nomeCliente, valor, valorManutencao)
+        
+        self.cur.execute(command)
+        self.conection.commit()
+
+    def insertGastos(self, itens, valor):
+        #INSERIR DADOS NA TABELA GASTOS
+        command = 'INSERT INTO GASTOS (itens, valor) VALUES("{}", {})'.format(itens, valor)
         
         self.cur.execute(command)
         self.conection.commit()
@@ -51,6 +65,8 @@ class bd:
         return len(service) != 0
 
 a = bd()
+#a.insertGastos('esmaltes', 16.50)
+#a.createTablesGastos()
 #for i in a.months:
 #    a.createTablesMonths(i)
 #a.insertService(10, '15/10/2020', '10:00', 'UNHA', 'Igor Santos', 20, 5)
