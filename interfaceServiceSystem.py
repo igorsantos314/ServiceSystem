@@ -201,7 +201,10 @@ class serviceSystem(Frame):
                 servico = comboServico.get()
                 cliente = etNomeCliente.get().upper()
                 valor = float(comboValor.get())
-                manutencao = (int(comboValorManutencao.get().replace('%','')) / 10) * valor
+
+                #CALCULO DE PORCENTAGEM PARA VALOR DE MANUTENCAO
+                porcentagem = int(comboValorManutencao.get().replace('%',''))
+                manutencao = ( porcentagem / 100) * valor
                 
                 #INSERIR DADOS NO BANCO DE DADOS
                 self.bancoDados.insertService(mes, data, hora, servico, cliente, valor, manutencao)
@@ -444,7 +447,11 @@ class serviceSystem(Frame):
         self.windowGastos.mainloop()
 
     def plotGraphVisaoNegocio(self):
-        pass
+        
+        dados = self.bancoDados.getDataNegocio()
+
+        #ENVIAR AS INFORMAÇÕES PARA FORUMLAR O GRAFICO
+        self.setGrafico.gerarGraficoFinanceiro(dados[0], dados[1], dados[2], dados[3])
 
 if __name__ == "__main__":
     serviceSystem()    

@@ -64,7 +64,44 @@ class bd:
         #CASO EXISTA ALGUM SERVICO
         return len(service) != 0
 
+    def getDataNegocio(self):
+
+        receita = 0
+        manutencao = 0
+        gastos = 0
+
+        #VARRER TODOS OS MESES
+        for i in self.months:
+
+            #PEGAR O VALOR E O VALOR PARA MANUTENAO DE CADA MES
+            show = "SELECT valor, valor_manutecao FROM {}".format(i)
+
+            self.cur.execute(show)
+            service = self.cur.fetchall()
+
+            #SOMA A RECEITA
+            for s in service:
+                receita += s[0]
+                manutencao += s[1]
+
+        #VARRER TODOS OS GASTOS
+        show = "SELECT valor FROM GASTOS"
+
+        self.cur.execute(show)
+        listaGastos = self.cur.fetchall()
+
+        #VARRE A LISTA DE GASTOS E VAI SOMANDO
+        for g in listaGastos:
+            gastos += g[0]
+
+        #CALCULAR LUCRO
+        lucro = receita - gastos
+
+        #RETORNA A TUPLA DE INFORMAÇÕES
+        return (receita, manutencao, gastos, lucro)
+        
 a = bd()
+#a.getDataNegocio()
 #a.insertGastos('esmaltes', 16.50)
 #a.createTablesGastos()
 #for i in a.months:
