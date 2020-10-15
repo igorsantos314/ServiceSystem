@@ -80,10 +80,12 @@ class serviceSystem(Frame):
         self.changeMonths()
 
         #PRESSIONAR F2 PARA CRIAR POST IT
+        self.windowMain.bind("<F1>", self.keyPressed)
         self.windowMain.bind("<F2>", self.keyPressed)
         self.windowMain.bind("<F3>", self.keyPressed)
         self.windowMain.bind("<F4>", self.keyPressed)
         self.windowMain.bind("<F5>", self.keyPressed)
+        self.windowMain.bind("<F6>", self.keyPressed)
 
         self.windowMain.mainloop()
 
@@ -91,7 +93,11 @@ class serviceSystem(Frame):
         l = event.keysym
 
         #PRESSIONAR F2
-        if l == 'F2':
+        if l == 'F1':
+            #TELA DE AJUDA
+            self.helpKeys()
+
+        elif l == 'F2':
             #CRIAR NOVO SERVICO
             self.AddNewServices()
 
@@ -106,6 +112,9 @@ class serviceSystem(Frame):
         elif l == 'F5':
             #CASO O USUARIO PRESSIONE F5
             self.refreshCalendar()
+        
+        elif l == 'F6':
+            self.plotGraphAllMonths()
 
     def AddNewServices(self):
 
@@ -452,6 +461,78 @@ class serviceSystem(Frame):
 
         #ENVIAR AS INFORMAÇÕES PARA FORUMLAR O GRAFICO
         self.setGrafico.gerarGraficoFinanceiro(dados[0], dados[1], dados[2], dados[3])
+
+    def plotGraphAllMonths(self):
+
+        self.windowYear = Tk()
+        self.windowYear.geometry('240x140+10+10')
+        self.windowYear.resizable(False, False)
+        self.windowYear.title('CREATE GRAPH RECEITA ALL MONTHS')
+        self.windowYear['bg'] = self.colorBackground
+
+        #Ano
+        lblAno = Label(self.windowYear, text='Selecione o Ano:', bg=self.colorBackground)
+        lblAno.place(x=10, y=20)
+
+        comboAno = ttk.Combobox(self.windowYear, width = 8) 
+
+        comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+        comboAno.current(0)
+        comboAno.place(x=10, y=40)
+
+        def plotar():
+            
+            ano = comboAno.get()
+
+            #RETORNA A LISTA DE RECEITAR
+            listaReceitas = self.bancoDados.getReceitaAllMonths(ano).__reversed__()
+
+            #PLOTAR GRAFICO
+            self.setGrafico.gerarGraficosReceitaMeses(listaReceitas)
+
+        #BOTAO PARAR GERAR O GRAFICO
+        btPlot = Button(self.windowYear, text='PLOTAR GRAFICO', bg='MediumSpringGreen', command=plotar)
+        btPlot.place(x=10, y=80)
+
+        self.windowYear.mainloop()
+
+    def helpKeys(self):
+
+        #LISTA DE AJUDA
+
+        ajuda = [
+                    'F2 - Cadastrar de Servico',
+                    'F3 - Adicionar Novo Gasto',
+                    'F4 - Plotar Grafico de Visao de Negócio',
+                    'F5 - Atualizar Calendário',
+                    'F6 - Plotar Grafico de Receitas dos 12 Meses',
+                    'F7 - ',
+                    'F8 - ',
+                    'F9 -',
+        ]
+
+        self.windowHelp = Tk()
+        self.windowHelp.geometry('470x350+10+10')
+        self.windowHelp.resizable(False, False)
+        self.windowHelp.title('Help')
+        self.windowHelp['bg'] = self.colorBackground
+
+
+        lblAjuda = Label(self.windowHelp, text='HELP', font=self.fontDefault, fg='Tomato', bg=self.colorBackground)
+        lblAjuda.pack(pady=10)
+
+        posX = 10
+        posY = 50
+
+        #ADICIONAR LISTA DE AJUDA
+        for i in ajuda:
+
+            lbl = Label(self.windowHelp, text=i, font=self.fontDefault, bg=self.colorBackground)
+            lbl.place(x=posX, y=posY)
+
+            posY += 30
+
+        self.windowHelp.mainloop()
 
 if __name__ == "__main__":
     serviceSystem()    

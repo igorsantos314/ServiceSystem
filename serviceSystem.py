@@ -100,7 +100,32 @@ class bd:
         #RETORNA A TUPLA DE INFORMAÇÕES
         return (receita, manutencao, gastos, lucro)
         
+    def getReceitaAllMonths(self, ano):
+        
+        listaReceitaMeses = []
+
+        #VARRER TODOS OS MESES
+        for m in self.months:
+
+            #PEGAR O VALOR E O VALOR PARA MANUTENAO DE CADA MES
+            show = "SELECT valor from {} WHERE data like '%{}'".format(m, ano)
+
+            self.cur.execute(show)
+            service = self.cur.fetchall()
+
+            #SOMA A RECEITA
+            receita = 0
+
+            for s in service:
+                receita += s[0]
+
+            listaReceitaMeses.append(receita)
+        
+        return listaReceitaMeses
+
 a = bd()
+#print(a.getReceitaAllMonths(2020))
+#a.getReceitaAllMonths(2020)
 #a.getDataNegocio()
 #a.insertGastos('esmaltes', 16.50)
 #a.createTablesGastos()
