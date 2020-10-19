@@ -14,7 +14,7 @@ class plotGraphs:
         topicos = ('RECEITA', 'MANUT.', 'GASTOS', 'LUCRO')
 
         #GERAR GRAFICO
-        barh(pos, valores, align='center', color='green')
+        barh(pos, valores, align='center', color='DarkMagenta')
         yticks(pos, topicos)
 
         #INFORMAÇÕES
@@ -35,7 +35,7 @@ class plotGraphs:
         topicos = tuple(self.bancoDados.months.__reversed__())
 
         #GERAR GRAFICO
-        barh(pos, valores, align='center', color='green')
+        barh(pos, valores, align='center', color='DarkMagenta')
         yticks(pos, topicos)
 
         #INFORMAÇÕES

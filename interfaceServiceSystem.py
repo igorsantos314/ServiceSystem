@@ -60,8 +60,47 @@ class serviceSystem(Frame):
                                 'SOBRANCELHA NA RENA'
                             )
 
+        #DIAS DA SEMANA
+        self.dias = [
+                'Segunda-feira',
+                'Terça-feira',
+                'Quarta-feira',
+                'Quinta-Feira',
+                'Sexta-feira',
+                'Sábado',
+                'Domingo'
+                ]
+
+        #LISTA DE LABELS DOS DIAS DA SEMANA
+        self.listOfDays = []
+
         self.windowService()
     
+    def setDaysOfWeek(self):
+
+        #VARRE OS 7 PRIMEIROS DIAS
+        for i in range(1, 8):
+            #ALINHA OS DIAS
+            data = date(year=self.currentYear, month=self.currentMonth, day=i)
+            d = self.dias[data.weekday()]
+
+            self.listOfDays[i-1]['text'] = d[:3]
+
+    def setDaysOfWeekInCalendar(self):
+
+        posX = 80
+
+        for i in range(8):
+            
+            #CRIAR LABELS DE DIAS DA SEMANA
+            lblDiaSemana = Label(self.windowMain, text='', font=self.fontDefault, bg=self.colorBackground, fg='black')
+            lblDiaSemana.place(x=posX, y=130)
+
+            posX += 80
+
+            #ADICIONA EM UMA LISTA PARA SER ATUALIZADA
+            self.listOfDays.append(lblDiaSemana)
+
     def windowService(self):
 
         self.windowMain = Tk()
@@ -72,6 +111,12 @@ class serviceSystem(Frame):
 
         #SETAR O MES 
         self.setTitleMonth()
+
+        #SETAR RANGE DE DIAS DA SEMANA
+        self.setDaysOfWeekInCalendar()
+
+        #SETAR DIAS ATUAIS
+        self.setDaysOfWeek()
 
         #SETAR BOTOES
         self.createRangeButtons()
@@ -373,14 +418,14 @@ class serviceSystem(Frame):
             posYEdit =      self.dictPositionsServices[j][7]
 
             #CRIA O SERVICO
-            self.showServices(cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit)
+            self.showServices(day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit)
 
         self.windowDay.mainloop()
 
-    def showServices(self, nomeClinete, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit):
+    def showServices(self, day, nomeCliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit):
         
         #CRIAR O SERVIÇO
-        lblNomeCliente = Label(self.windowDay, text=nomeClinete, height=5, width=30, font=self.fontDefault, bg='white')
+        lblNomeCliente = Label(self.windowDay, text=nomeCliente, height=5, width=30, font=self.fontDefault, bg='white')
         lblNomeCliente.place(x=posXCliente, y=posYCliente)
 
         lblHora = Label(self.windowDay, text=hora, bg='white', font=self.fontDefault)
@@ -390,10 +435,58 @@ class serviceSystem(Frame):
         lblServico.place(x=posXServico, y=posYServico)
 
         #CRIAR O BOTAO DE EDICAO
-        btEdit = Button(self.windowDay, bg=self.colorNameMonth, font=self.fontDefault)
+        btEdit = Button(self.windowDay, bg=self.colorNameMonth, font=self.fontDefault, command=lambda : self.editService(day, nomeCliente, hora, servico, edit))
         btEdit.place(x=posXEdit, y=posYEdit)
 
+    def editService(self, day, nomeCliente, hora, servico, edit):
+        
+        print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
+
+        self.windowEditService = Tk()
+        self.windowEditService.geometry('570x240+10+10')
+        self.windowEditService.resizable(False, False)
+        self.windowEditService.title('EDIT SERVICES')
+        self.windowEditService['bg'] = self.colorBackground
+
+        positionsX = [i for i in range(10, 600, 140)]
+        positionsY = [i for i in range(10, 500, 80)]
+
+        #EDITAR O TEMPO
+        btEditData = Button(self.windowEditService, text='Data', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditData.place(x=positionsX[0], y=positionsY[0])
+
+        btEditMes = Button(self.windowEditService, text='Mês', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditMes.place(x=positionsX[1], y=positionsY[0])
+
+        btEditAno = Button(self.windowEditService, text='Ano', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditAno.place(x=positionsX[2], y=positionsY[0])
+
+        btEditHora = Button(self.windowEditService, text='Hora', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditHora.place(x=positionsX[3], y=positionsY[0])
+
+        #EDITAR INFORMAÇÕES
+        btEditServico = Button(self.windowEditService, text='Servico', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditServico.place(x=positionsX[0], y=positionsY[1])
+
+        btEditNomeCliente = Button(self.windowEditService, text='Cliente', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditNomeCliente.place(x=positionsX[1], y=positionsY[1])
+
+        btEditValor = Button(self.windowEditService, text='Valor', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditValor.place(x=positionsX[2], y=positionsY[1])
+
+        btEditManutencao = Button(self.windowEditService, text='Manutenção', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditManutencao.place(x=positionsX[3], y=positionsY[1])
+
+        #BOTAO PARA EXCLUIR SERVICO
+        btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command='')
+        btDelete.place(x=positionsX[0], y=positionsY[2])
+
+        self.windowEditService.mainloop()    
+
     def refreshCalendar(self):
+
+        #SETAR DIAS ATUAIS
+        self.setDaysOfWeek()
 
         for lista in self.buttonsDays:
 
@@ -508,7 +601,7 @@ class serviceSystem(Frame):
                     'F6 - Plotar Grafico de Receitas dos 12 Meses',
                     'F7 - ',
                     'F8 - ',
-                    'F9 -',
+                    'F9 - ',
         ]
 
         self.windowHelp = Tk()
@@ -516,7 +609,6 @@ class serviceSystem(Frame):
         self.windowHelp.resizable(False, False)
         self.windowHelp.title('Help')
         self.windowHelp['bg'] = self.colorBackground
-
 
         lblAjuda = Label(self.windowHelp, text='HELP', font=self.fontDefault, fg='Tomato', bg=self.colorBackground)
         lblAjuda.pack(pady=10)
