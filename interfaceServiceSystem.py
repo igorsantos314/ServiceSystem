@@ -51,13 +51,17 @@ class serviceSystem(Frame):
         self.currentYear = date.today().year
 
         #TUPLA DE SERVICOS
-        self.tuplaServices = (  'UNHAS MÃO',
-                                'UNHAS PÉ',
-                                'UNHAS PÉ E MÃO',
-                                'UNHAS EM GEL',
-                                'UNHAS ALONGAMENTO',
-                                'SOBRANCELHA NORMAL',
-                                'SOBRANCELHA NA RENA'
+        self.tuplaServices = (  'MANICURE',
+                                'PEDICURE',
+                                'MANICURE + PEDICURE',
+                                'ESMALTAÇÃO',
+                                'DESIGN SOBRAN.',
+                                'DESIGN SOBRAN. + HENA',
+                                'HENA',
+                                'PACOTE MENSAL 1',
+                                'PACOTE MENSAL 2',
+                                'PACOTE MENSAL 3',
+                                'PACOTE MENSAL 4',
                             )
 
         #DIAS DA SEMANA
@@ -124,7 +128,7 @@ class serviceSystem(Frame):
         #BOTOES PARA ALTERAR OS MESES
         self.changeMonths()
 
-        #PRESSIONAR F2 PARA CRIAR POST IT
+        #TECLAS DE FUNCOES
         self.windowMain.bind("<F1>", self.keyPressed)
         self.windowMain.bind("<F2>", self.keyPressed)
         self.windowMain.bind("<F3>", self.keyPressed)
@@ -232,7 +236,7 @@ class serviceSystem(Frame):
         
         comboValor = ttk.Combobox(self.windowAddSerivice, width = 8) 
 
-        comboValor['values'] = tuple([i for i in range(5, 60, 5)])
+        comboValor['values'] = (9, 10, 15, 20, 24, 25)
         comboValor.current(3)
         comboValor.place(x=10, y=160)
 
@@ -440,46 +444,126 @@ class serviceSystem(Frame):
 
     def editService(self, day, nomeCliente, hora, servico, edit):
         
-        print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
+        #print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
 
         self.windowEditService = Tk()
-        self.windowEditService.geometry('570x240+10+10')
+        self.windowEditService.geometry('290x245+10+10')
         self.windowEditService.resizable(False, False)
         self.windowEditService.title('EDIT SERVICES')
         self.windowEditService['bg'] = self.colorBackground
 
+        #LISTA DE POSICOES
         positionsX = [i for i in range(10, 600, 140)]
         positionsY = [i for i in range(10, 500, 80)]
 
+        #JANELA DE EDICAO
+        def editData(tipo):
+            windowMainEdit = Tk()
+            windowMainEdit.geometry('450x170+10+10')
+            windowMainEdit.resizable(False, False)
+            windowMainEdit.title('EDIT SERVICES')
+            windowMainEdit['bg'] = self.colorBackground
+
+            if tipo == 'Data':
+                #Data
+                lblData = Label(windowMainEdit, text='Data:', bg=self.colorBackground)
+                lblData.place(x=10, y=20)
+
+                comboData = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboData['values'] = tuple(['{}'.format(i) for i in range(1, 32)])
+                comboData.current(self.day-1)
+                comboData.place(x=10, y=40)
+
+                #Mes
+                lblMes = Label(windowMainEdit, text='Mês:', bg=self.colorBackground)
+                lblMes.place(x=130, y=20)
+
+                comboMes = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboMes['values'] = tuple(['{}'.format(i) for i in range(1, 13)])
+                comboMes.current(self.month-1)
+                comboMes.place(x=130, y=40)
+
+                #Ano
+                lblAno = Label(windowMainEdit, text='Ano:', bg=self.colorBackground)
+                lblAno.place(x=250, y=20)
+
+                comboAno = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+                comboAno.current(0)
+                comboAno.place(x=250, y=40)
+
+                #Hora
+                lblHora = Label(windowMainEdit, text='Hora:', bg=self.colorBackground)
+                lblHora.place(x=10, y=80)
+
+                comboHora = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboHora['values'] = ('7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00')
+                comboHora.current(0)
+                comboHora.place(x=10, y=100)
+
+            elif tipo == 'Serv':
+                #SERVICO
+                lblServico = Label(windowMainEdit, text='Serviço:', bg=self.colorBackground)
+                lblServico.place(x=10, y=20)
+                
+                comboServico = ttk.Combobox(windowMainEdit, width = 23) 
+
+                comboServico['values'] = self.tuplaServices
+                comboServico.current(2)
+                comboServico.place(x=10, y=40)
+
+                #NOME DO CLIENTE
+                lblNomeCliente = Label(windowMainEdit, text='Nome do Cliente:', bg=self.colorBackground)
+                lblNomeCliente.place(x=230, y=20)
+
+                etNomeCliente = Entry(windowMainEdit, width=24)
+                etNomeCliente.place(x=230, y=40)
+
+            elif tipo == 'Val':
+
+                #VALOR
+                lblValor = Label(windowMainEdit, text='Valor:', bg=self.colorBackground)
+                lblValor.place(x=10, y=20)
+                
+                comboValor = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboValor['values'] = (9, 10, 15, 20, 24, 25)
+                comboValor.current(3)
+                comboValor.place(x=10, y=40)
+
+                #PORCENTAGEM PARA MANUTENÇÃO
+                lblValorManutencao = Label(windowMainEdit, text='Manutenção:', bg=self.colorBackground)
+                lblValorManutencao.place(x=130, y=20)
+                
+                comboValorManutencao = ttk.Combobox(windowMainEdit, width = 8) 
+
+                comboValorManutencao['values'] = tuple(['{}%'.format(i) for i in range(10, 100, 10)])
+                comboValorManutencao.current(2)
+                comboValorManutencao.place(x=130, y=40)
+
+            #BOTAO DE SALVAR ALTERAÇÕES
+            btSave = Button(windowMainEdit, text='Salvar', bg='MediumSpringGreen')
+            btSave.place(x=360, y=130)
+
+            windowMainEdit.mainloop()
+
         #EDITAR O TEMPO
-        btEditData = Button(self.windowEditService, text='Data', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
+        btEditData = Button(self.windowEditService, text='Data', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Data'))
         btEditData.place(x=positionsX[0], y=positionsY[0])
 
-        btEditMes = Button(self.windowEditService, text='Mês', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditMes.place(x=positionsX[1], y=positionsY[0])
+        btEditServicoCliente = Button(self.windowEditService, text='Serviço', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Serv'))
+        btEditServicoCliente.place(x=positionsX[0], y=positionsY[1])
 
-        btEditAno = Button(self.windowEditService, text='Ano', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditAno.place(x=positionsX[2], y=positionsY[0])
-
-        btEditHora = Button(self.windowEditService, text='Hora', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditHora.place(x=positionsX[3], y=positionsY[0])
-
-        #EDITAR INFORMAÇÕES
-        btEditServico = Button(self.windowEditService, text='Servico', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditServico.place(x=positionsX[0], y=positionsY[1])
-
-        btEditNomeCliente = Button(self.windowEditService, text='Cliente', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditNomeCliente.place(x=positionsX[1], y=positionsY[1])
-
-        btEditValor = Button(self.windowEditService, text='Valor', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditValor.place(x=positionsX[2], y=positionsY[1])
-
-        btEditManutencao = Button(self.windowEditService, text='Manutenção', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command='')
-        btEditManutencao.place(x=positionsX[3], y=positionsY[1])
+        btEditValores = Button(self.windowEditService, text='Valores', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Val'))
+        btEditValores.place(x=positionsX[0], y=positionsY[2])
 
         #BOTAO PARA EXCLUIR SERVICO
-        btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command='')
-        btDelete.place(x=positionsX[0], y=positionsY[2])
+        btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command=lambda : editData('Del'))
+        btDelete.place(x=positionsX[1], y=positionsY[1])
 
         self.windowEditService.mainloop()    
 
