@@ -123,7 +123,22 @@ class bd:
         
         return listaReceitaMeses
 
+    def editService(self, mes, data, nomeCliente, hora, servico, atributoEdit, newValor):
+        command = f'UPDATE {self.months[mes-1]} SET {atributoEdit} = "{newValor}" WHERE data = "{data}" AND nome_cliente = "{nomeCliente}" AND servico = "{servico}" AND hora = "{hora}"'
+        
+        self.cur.execute(command)
+        self.conection.commit()
+
+    def dropService(self, mes, data, nomeCliente, hora, servico):
+        command = f'DELETE FROM {self.months[mes-1]} WHERE data="{data}" AND nome_cliente = "{nomeCliente}" AND servico = "{servico}" AND hora = "{hora}"'
+        #print(command)
+
+        self.cur.execute(command)
+        self.conection.commit()
+
 a = bd()
+#a.dropService(10, '15/10/2020', 'AMELIA', '7:00', 'UNHAS PÉ E MÃO')
+#a.editService()
 #print(a.getReceitaAllMonths(2020))
 #a.getReceitaAllMonths(2020)
 #a.getDataNegocio()

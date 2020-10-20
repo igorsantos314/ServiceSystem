@@ -444,7 +444,7 @@ class serviceSystem(Frame):
 
     def editService(self, day, nomeCliente, hora, servico, edit):
         
-        #print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
+        print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
 
         self.windowEditService = Tk()
         self.windowEditService.geometry('290x245+10+10')
@@ -463,6 +463,15 @@ class serviceSystem(Frame):
             windowMainEdit.resizable(False, False)
             windowMainEdit.title('EDIT SERVICES')
             windowMainEdit['bg'] = self.colorBackground
+
+            #SALVAR ALTERAÇÕES NO BANCO DE DADOS
+            def save():
+
+                #FECHAR JANELA ATUAL
+                windowMainEdit.destroy()
+
+                #FECHAR JANELA DE OPÇOES DE EDICAO
+                self.windowEditService.destroy()
 
             if tipo == 'Data':
                 #Data
@@ -546,10 +555,28 @@ class serviceSystem(Frame):
                 comboValorManutencao.place(x=130, y=40)
 
             #BOTAO DE SALVAR ALTERAÇÕES
-            btSave = Button(windowMainEdit, text='Salvar', bg='MediumSpringGreen')
+            btSave = Button(windowMainEdit, text='Salvar', bg='MediumSpringGreen', command=save)
             btSave.place(x=360, y=130)
 
             windowMainEdit.mainloop()
+
+        def deleteService():
+            #PARAMETRO PARA EXCLUSÃO mes, data, nomeCliente, hora, servico
+            data = f'{day}/{self.currentMonth}/{self.currentYear}'
+
+            try:
+                #DELETAR SERVICO DA BASE DE DADOS
+                self.bancoDados.dropService(self.currentMonth, data, nomeCliente, hora, servico)
+                messagebox.showinfo('', 'DELETADO COM SUCESSO !!')
+
+            except:
+                messagebox.showerror('', 'OCORREU UM ERRO !')
+
+            #FECHAR JANELA DE SERVICOS DO DIA
+            self.windowDay.destroy() 
+
+            #FECHAR JANELA DE OPÇOES DE EDICAO
+            self.windowEditService.destroy()
 
         #EDITAR O TEMPO
         btEditData = Button(self.windowEditService, text='Data', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Data'))
@@ -562,7 +589,7 @@ class serviceSystem(Frame):
         btEditValores.place(x=positionsX[0], y=positionsY[2])
 
         #BOTAO PARA EXCLUIR SERVICO
-        btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command=lambda : editData('Del'))
+        btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command=lambda : deleteService())
         btDelete.place(x=positionsX[1], y=positionsY[1])
 
         self.windowEditService.mainloop()    
