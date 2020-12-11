@@ -181,14 +181,39 @@ class bd:
         self.conection.commit()
 
     # ----------------------------------------- SETOR DE TESTES DE SOFTWARE -----------------------------------------
-    def test():
+    def testGastos(self):
         
         #INSERIR DESPESAS NVZS NOS 12 MESES
         for m in range(1, 13):
-            pass
 
+            #ITERAR NVZS
+            nRandom = randint(10, 50)
+
+            for i in range(nRandom):
+                #ADICIONAR DESPESA TESTE
+                data = F'1/{m}/2020'
+                self.insertGastos(data, 'TESTE', randint(20,200))
+
+    
+    def testeReceita(self):
+
+        #INSERIR DESVICEOS NVZS NOS 12 MESES
+        for m in range(1, 13):
+
+            nRandom = randint(10, 50)
+            print(nRandom)
+            
+            #ITERAR NVZS
+            for i in range(nRandom):
+
+                #ADICIONAR SERVICO TESTE
+                data = F'1/{self.months[m-1]}/2020'
+                #m, data, hora, servico, nomeCliente, valor, valorManutencao
+                self.insertService(m, data, '7:00', 'TESTE', 'TESTE', randint(20,200), 10)
 
 a = bd()
+#a.testeReceita()
+#a.testGastos()
 #print(a.getDespesasAllMonths('2020'))
 #a.insertGastos('20/12/2020', 'ESMALTE', 50)
 #a.dropService(10, '15/10/2020', 'AMELIA', '7:00', 'UNHAS PÉ E MÃO')
