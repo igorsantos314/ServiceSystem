@@ -464,14 +464,31 @@ class serviceSystem(Frame):
             windowMainEdit.title('EDIT SERVICES')
             windowMainEdit['bg'] = self.colorBackground
 
-            #SALVAR ALTERAÇÕES NO BANCO DE DADOS
-            def save():
+            def destroyWindows():
 
                 #FECHAR JANELA ATUAL
                 windowMainEdit.destroy()
 
                 #FECHAR JANELA DE OPÇOES DE EDICAO
                 self.windowEditService.destroy()
+
+            #SALVAR ALTERAÇÕES NO BANCO DE DADOS
+            def save():
+                data = f'{day}/{self.currentMonth}/{self.currentYear}'
+
+                if tipo == 'Data':
+                    #NOVA DATA ATUALIZANDO APENAS O DIA
+                    newData = f'{comboData.get()}/{self.currentMonth}/{self.currentYear}'
+                    newHora = comboHora.get()
+
+                    #EDITA O DIA DA DATA
+                    self.bancoDados.editService(self.currentMonth, data, nomeCliente, hora, servico, 'data', newData)
+
+                    #EDITA O HORARIO
+                    self.bancoDados.editService(self.currentMonth, newData, nomeCliente, hora, servico, 'hora', newHora)
+
+                #FECHA TODAS AS WINDOWS
+                destroyWindows()
 
             if tipo == 'Data':
                 #Data
@@ -614,33 +631,64 @@ class serviceSystem(Frame):
     def gastos(self):
 
         self.windowGastos = Tk()
-        self.windowGastos.geometry('360x140+10+10')
+        self.windowGastos.geometry('360x160+10+10')
         self.windowGastos.resizable(False, False)
         self.windowGastos.title('ADD NEW SPENDING')
         self.windowGastos['bg'] = self.colorBackground
 
+        #Data
+        lblData = Label(self.windowGastos, text='Data:', bg=self.colorBackground)
+        lblData.place(x=10, y=20)
+
+        comboData = ttk.Combobox(self.windowGastos, width=8) 
+
+        comboData['values'] = tuple(['{}'.format(i) for i in range(1, 32)])
+        comboData.current(self.day-1)
+        comboData.place(x=10, y=40)
+
+        #Mes
+        lblMes = Label(self.windowGastos, text='Mês:', bg=self.colorBackground)
+        lblMes.place(x=130, y=20)
+
+        comboMes = ttk.Combobox(self.windowGastos, width=8) 
+
+        comboMes['values'] = tuple(['{}'.format(i) for i in range(1, 13)])
+        comboMes.current(self.month-1)
+        comboMes.place(x=130, y=40)
+
+        #Ano
+        lblAno = Label(self.windowGastos, text='Ano:', bg=self.colorBackground)
+        lblAno.place(x=250, y=20)
+
+        comboAno = ttk.Combobox(self.windowGastos, width=8) 
+
+        comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+        comboAno.current(0)
+        comboAno.place(x=250, y=40)
+
         #Itens
         lblItens = Label(self.windowGastos, text='Itens:', bg=self.colorBackground)
-        lblItens.place(x=10, y=20)
+        lblItens.place(x=10, y=70)
 
-        etItens = Entry(self.windowGastos)
-        etItens.place(x=10, y=40)
+        etItens = Entry(self.windowGastos, width=10)
+        etItens.place(x=10, y=90)
 
         #Valor
         lblValor = Label(self.windowGastos, text='Valor R$:', bg=self.colorBackground)
-        lblValor.place(x=180, y=20)
+        lblValor.place(x=130, y=70)
 
-        etValor = Entry(self.windowGastos)
-        etValor.place(x=180, y=40)
+        etValor = Entry(self.windowGastos, width=10)
+        etValor.place(x=130, y=90)
 
         def insertDataBase():
             
             try:
+                data = F'{comboData.get()}/{comboMes.get()}/{comboAno.get()}'
                 itens = etItens.get().upper()
                 valor = float(etValor.get())
 
                 #ADICIONAR GASTO NA BASE DE DADOS
-                self.bancoDados.insertGastos(itens, valor)
+                self.bancoDados.insertGastos(data, itens, valor)
 
                 messagebox.showinfo('', 'GASTO ADICIONADO COM SUCESSO !')
 
@@ -648,6 +696,7 @@ class serviceSystem(Frame):
                 etValor.delete(0, END)
                 etItens.delete(0, END)
 
+                #FOCAR NO CAMPO DE ITENS
                 etItens.focus()
 
             except:
@@ -655,7 +704,7 @@ class serviceSystem(Frame):
 
         #CRIAR NOVO GASTO
         btCreate = Button(self.windowGastos, text='SALVAR', bg='MediumSpringGreen', command=insertDataBase)
-        btCreate.place(x=10, y=80)
+        btCreate.place(x=250, y=120)
 
         self.windowGastos.mainloop()
 
@@ -689,10 +738,11 @@ class serviceSystem(Frame):
             ano = comboAno.get()
 
             #RETORNA A LISTA DE RECEITAR
-            listaReceitas = self.bancoDados.getReceitaAllMonths(ano).__reversed__()
+            listaReceitas = self.bancoDados.getReceitaAllMonths(ano)
+            listaDespesas = self.bancoDados.getDespesasAllMonths(ano)
 
             #PLOTAR GRAFICO
-            self.setGrafico.gerarGraficosReceitaMeses(listaReceitas)
+            self.setGrafico.generateGraphYear(listaReceitas, listaDespesas)
 
         #BOTAO PARAR GERAR O GRAFICO
         btPlot = Button(self.windowYear, text='PLOTAR GRAFICO', bg='MediumSpringGreen', command=plotar)
@@ -703,7 +753,6 @@ class serviceSystem(Frame):
     def helpKeys(self):
 
         #LISTA DE AJUDA
-
         ajuda = [
                     'F2 - Cadastrar de Servico',
                     'F3 - Adicionar Novo Gasto',

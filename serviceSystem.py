@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from random import randint
 
 class bd:
 
@@ -35,18 +36,38 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
-    def insertGastos(self, itens, valor):
+    def insertGastos(self, data, itens, valor):
+        
+        #PEGA O ID ATUAL
+        id = self.getIdGastos()
+
         #INSERIR DADOS NA TABELA GASTOS
-        command = 'INSERT INTO GASTOS (itens, valor) VALUES("{}", {})'.format(itens, valor)
+        command = F'INSERT INTO GASTOS (id, data, itens, valor) VALUES({id}, "{data}", "{itens}", {valor})'
         
         self.cur.execute(command)
         self.conection.commit()
+
+    def getIdGastos(self):
+
+        #LISTA TODOS OS GASTOS
+        show = "SELECT * FROM GASTOS"
+
+        self.cur.execute(show)
+        service = self.cur.fetchall()
+
+        if len(service) == 0:
+            #RETORNA O ID DESEJADO
+            return 0
+
+        else:
+            #RETORNA O ID DO ULTIMO INDICE
+            return service[-1][0] + 1
+
 
     def getService(self, day, month, year):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
         show = "SELECT * FROM {} WHERE data = '{}/{}/{}'".format(self.months[month-1], day, month, year)
-        #print(show)
 
         self.cur.execute(show)
         service = self.cur.fetchall()
@@ -123,6 +144,29 @@ class bd:
         
         return listaReceitaMeses
 
+    def getDespesasAllMonths(self, ano):
+        listaDespesaMeses = []
+
+        #VARRER TODOS OS MESES
+        for m in range(1, 13):
+
+            #PEGAR O VALOR E O VALOR PARA MANUTENAO DE CADA MES
+            show = "SELECT valor from GASTOS WHERE data like '%/{}/{}'".format(m, ano)
+
+            self.cur.execute(show)
+            service = self.cur.fetchall()
+
+            #SOMA A DESPESA
+            despesa = 0
+
+            for s in service:
+                despesa += s[0]
+
+            listaDespesaMeses.append(despesa)
+
+        return listaDespesaMeses
+
+
     def editService(self, mes, data, nomeCliente, hora, servico, atributoEdit, newValor):
         command = f'UPDATE {self.months[mes-1]} SET {atributoEdit} = "{newValor}" WHERE data = "{data}" AND nome_cliente = "{nomeCliente}" AND servico = "{servico}" AND hora = "{hora}"'
         
@@ -136,7 +180,17 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    # ----------------------------------------- SETOR DE TESTES DE SOFTWARE -----------------------------------------
+    def test():
+        
+        #INSERIR DESPESAS NVZS NOS 12 MESES
+        for m in range(1, 13):
+            pass
+
+
 a = bd()
+#print(a.getDespesasAllMonths('2020'))
+#a.insertGastos('20/12/2020', 'ESMALTE', 50)
 #a.dropService(10, '15/10/2020', 'AMELIA', '7:00', 'UNHAS PÉ E MÃO')
 #a.editService()
 #print(a.getReceitaAllMonths(2020))
