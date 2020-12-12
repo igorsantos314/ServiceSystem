@@ -16,7 +16,7 @@ class bd:
         
     def createTablesMonths(self, m):
         #CRIAR TABELAS DE MESES
-        command = 'CREATE TABLE {} (data DATE, hora TEXT, servico TEXT, nome_cliente TEXT, valor REAL, valor_manutecao REAL)'.format(m)
+        command = F'CREATE TABLE {m} (id, data DATE, hora TEXT, servico TEXT, nome_cliente TEXT, valor REAL, valor_manutecao REAL)'
         
         self.cur.execute(command)
         self.conection.commit()
@@ -30,9 +30,13 @@ class bd:
 
     def insertService(self, m, data, hora, servico, nomeCliente, valor, valorManutencao):
 
+        #PEGA O ID ATUAL
+        id = self.getIdService(self.months[m-1])
+
         #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = 'INSERT INTO {} (data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES("{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], data, hora, servico, nomeCliente, valor, valorManutencao)
-        
+        command = 'INSERT INTO {} (id, data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES({}, "{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], id, data, hora, servico, nomeCliente, valor, valorManutencao)
+        print(command)
+
         self.cur.execute(command)
         self.conection.commit()
 
@@ -47,10 +51,10 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
-    def getIdGastos(self):
-
+    def getIdService(self, m):
+    
         #LISTA TODOS OS GASTOS
-        show = "SELECT * FROM GASTOS"
+        show = F"SELECT * FROM {m}"
 
         self.cur.execute(show)
         service = self.cur.fetchall()
@@ -63,6 +67,24 @@ class bd:
             #RETORNA O ID DO ULTIMO INDICE
             return service[-1][0] + 1
 
+    def getIdGastos(self):
+
+        #LISTA TODOS OS GASTOS
+        show = "SELECT * FROM GASTOS"
+
+        self.cur.execute(show)
+        despesas = self.cur.fetchall()
+
+        if len(despesas) == 0:
+            #RETORNA O ID DESEJADO
+            return 0
+
+        else:
+            #RETORNA O ID DO ULTIMO INDICE
+            return despesas[-1][0] + 1
+
+    def getSpecifyService(self):
+        pass
 
     def getService(self, day, month, year):
 
@@ -167,8 +189,8 @@ class bd:
         return listaDespesaMeses
 
 
-    def editService(self, mes, data, nomeCliente, hora, servico, atributoEdit, newValor):
-        command = f'UPDATE {self.months[mes-1]} SET {atributoEdit} = "{newValor}" WHERE data = "{data}" AND nome_cliente = "{nomeCliente}" AND servico = "{servico}" AND hora = "{hora}"'
+    def editService(self, id, mes, atributoEdit, newValor):
+        command = f'UPDATE {self.months[mes-1]} SET {atributoEdit} = "{newValor}" WHERE id = {id}'
         
         self.cur.execute(command)
         self.conection.commit()
@@ -181,6 +203,15 @@ class bd:
         self.conection.commit()
 
     # ----------------------------------------- SETOR DE TESTES DE SOFTWARE -----------------------------------------
+    def dropAllTables(self):
+
+        for m in self.months:
+            #DELETAR A TABELA
+            command = F'DROP TABLE {m}'
+
+            self.cur.execute(command)
+            self.conection.commit()
+
     def testGastos(self):
         
         #INSERIR DESPESAS NVZS NOS 12 MESES
@@ -193,7 +224,6 @@ class bd:
                 #ADICIONAR DESPESA TESTE
                 data = F'1/{m}/2020'
                 self.insertGastos(data, 'TESTE', randint(20,200))
-
     
     def testeReceita(self):
 
@@ -204,14 +234,17 @@ class bd:
             print(nRandom)
             
             #ITERAR NVZS
-            for i in range(nRandom):
+            for i in range(10):
 
                 #ADICIONAR SERVICO TESTE
-                data = F'1/{self.months[m-1]}/2020'
+                data = F'1/{m}/2020'
+
                 #m, data, hora, servico, nomeCliente, valor, valorManutencao
                 self.insertService(m, data, '7:00', 'TESTE', 'TESTE', randint(20,200), 10)
 
 a = bd()
+#a.testeReceita()
+#a.dropAllTables()
 #a.testeReceita()
 #a.testGastos()
 #print(a.getDespesasAllMonths('2020'))
@@ -224,7 +257,7 @@ a = bd()
 #a.insertGastos('esmaltes', 16.50)
 #a.createTablesGastos()
 #for i in a.months:
-#    a.createTablesMonths(i)
+    #a.createTablesMonths(i)
 #a.insertService(10, '15/10/2020', '10:00', 'UNHA', 'Igor Santos', 20, 5)
 #a.insertService(10, '15/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)
 #a.insertService(10, '13/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)

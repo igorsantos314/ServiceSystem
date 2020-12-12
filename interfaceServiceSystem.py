@@ -407,9 +407,10 @@ class serviceSystem(Frame):
         for j, elements in enumerate(listServicos):
             
             #PEGA OS DADOS DOS ELEMENTOS EXIBIDOS
-            cliente = elements[3]
-            hora    = elements[1]
-            servico = elements[2]
+            id = elements[0]
+            cliente = elements[4]
+            hora    = elements[2]
+            servico = elements[3]
 
             #SETA AS POSICOES DE CADA SERVICO NO QUADRO
             posXCliente =   self.dictPositionsServices[j][0]
@@ -422,29 +423,31 @@ class serviceSystem(Frame):
             posYEdit =      self.dictPositionsServices[j][7]
 
             #CRIA O SERVICO
-            self.showServices(day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit)
+            self.showServices(id, day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit)
 
         self.windowDay.mainloop()
 
-    def showServices(self, day, nomeCliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit):
+    def showServices(self, id, day, nomeCliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit):
         
         #CRIAR O SERVIÇO
-        lblNomeCliente = Label(self.windowDay, text=nomeCliente, height=5, width=30, font=self.fontDefault, bg='white')
-        lblNomeCliente.place(x=posXCliente, y=posYCliente)
+        #lblNomeCliente = Label(self.windowDay, text=nomeCliente, height=5, width=30, font=self.fontDefault, bg='white')
+        #lblNomeCliente.place(x=posXCliente, y=posYCliente)
 
-        lblHora = Label(self.windowDay, text=hora, bg='white', font=self.fontDefault)
+        #CRIAR O BOTAO DE EDICAO E NOME DO CLINETE
+        btEdit = Button(self.windowDay, text=nomeCliente, bg=self.colorNameMonth, height=4, width=28, font=self.fontDefault, command=lambda : self.editService(id, day, nomeCliente, hora, servico, edit))
+        btEdit.place(x=posXCliente, y=posYCliente)
+
+        #HORA DO SERVICO
+        lblHora = Label(self.windowDay, text=hora, bg=self.colorNameMonth, font=self.fontDefault)
         lblHora.place(x=posXHora, y=posYHora)
 
-        lblServico = Label(self.windowDay, text=servico, bg='white', font=self.fontDefault)
+        #NOME DO SERVICO
+        lblServico = Label(self.windowDay, text=servico, bg=self.colorNameMonth, font=self.fontDefault)
         lblServico.place(x=posXServico, y=posYServico)
 
-        #CRIAR O BOTAO DE EDICAO
-        btEdit = Button(self.windowDay, bg=self.colorNameMonth, font=self.fontDefault, command=lambda : self.editService(day, nomeCliente, hora, servico, edit))
-        btEdit.place(x=posXEdit, y=posYEdit)
-
-    def editService(self, day, nomeCliente, hora, servico, edit):
+    def editService(self, id, day, nomeCliente, hora, servico, edit):
         
-        print(day, self.currentMonth, self.currentYear, nomeCliente, hora, servico, edit)
+        print(id, self.currentMonth, self.currentYear)
 
         self.windowEditService = Tk()
         self.windowEditService.geometry('290x245+10+10')
@@ -465,7 +468,6 @@ class serviceSystem(Frame):
             windowMainEdit['bg'] = self.colorBackground
 
             def destroyWindows():
-
                 #FECHAR JANELA ATUAL
                 windowMainEdit.destroy()
 
@@ -482,10 +484,24 @@ class serviceSystem(Frame):
                     newHora = comboHora.get()
 
                     #EDITA O DIA DA DATA
-                    self.bancoDados.editService(self.currentMonth, data, nomeCliente, hora, servico, 'data', newData)
+                    self.bancoDados.editService(id, self.currentMonth, 'data', newData)
 
                     #EDITA O HORARIO
-                    self.bancoDados.editService(self.currentMonth, newData, nomeCliente, hora, servico, 'hora', newHora)
+                    self.bancoDados.editService(id, self.currentMonth, 'hora', newHora)
+
+                elif tipo == 'Serv':
+                    #NOVO SERVICO
+                    newServ = comboServico.get()
+
+                    #EDITA O SERVICO
+                    self.bancoDados.editService(id, self.currentMonth, 'servico', newServ)
+
+                elif tipo == 'Val':
+                    #NOVO VALOR
+                    newVal = comboValor.get()
+
+                    #EDITA O SERVICO
+                    self.bancoDados.editService(id, self.currentMonth, 'valor', newVal)
 
                 #FECHA TODAS AS WINDOWS
                 destroyWindows()
@@ -533,7 +549,7 @@ class serviceSystem(Frame):
 
             elif tipo == 'Serv':
                 #SERVICO
-                lblServico = Label(windowMainEdit, text='Serviço:', bg=self.colorBackground)
+                lblServico = Label(windowMainEdit, text='Servico:', bg=self.colorBackground)
                 lblServico.place(x=10, y=20)
                 
                 comboServico = ttk.Combobox(windowMainEdit, width = 23) 
@@ -542,15 +558,7 @@ class serviceSystem(Frame):
                 comboServico.current(2)
                 comboServico.place(x=10, y=40)
 
-                #NOME DO CLIENTE
-                lblNomeCliente = Label(windowMainEdit, text='Nome do Cliente:', bg=self.colorBackground)
-                lblNomeCliente.place(x=230, y=20)
-
-                etNomeCliente = Entry(windowMainEdit, width=24)
-                etNomeCliente.place(x=230, y=40)
-
             elif tipo == 'Val':
-
                 #VALOR
                 lblValor = Label(windowMainEdit, text='Valor:', bg=self.colorBackground)
                 lblValor.place(x=10, y=20)
@@ -560,16 +568,6 @@ class serviceSystem(Frame):
                 comboValor['values'] = (9, 10, 15, 20, 24, 25)
                 comboValor.current(3)
                 comboValor.place(x=10, y=40)
-
-                #PORCENTAGEM PARA MANUTENÇÃO
-                lblValorManutencao = Label(windowMainEdit, text='Manutenção:', bg=self.colorBackground)
-                lblValorManutencao.place(x=130, y=20)
-                
-                comboValorManutencao = ttk.Combobox(windowMainEdit, width = 8) 
-
-                comboValorManutencao['values'] = tuple(['{}%'.format(i) for i in range(10, 100, 10)])
-                comboValorManutencao.current(2)
-                comboValorManutencao.place(x=130, y=40)
 
             #BOTAO DE SALVAR ALTERAÇÕES
             btSave = Button(windowMainEdit, text='Salvar', bg='MediumSpringGreen', command=save)
