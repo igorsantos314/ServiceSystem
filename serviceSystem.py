@@ -16,7 +16,7 @@ class bd:
         
     def createTablesMonths(self, m):
         #CRIAR TABELAS DE MESES
-        command = F'CREATE TABLE {m} (id, data DATE, hora TEXT, servico TEXT, nome_cliente TEXT, valor REAL, valor_manutecao REAL)'
+        command = F'CREATE TABLE {m} (id serial, data DATE, hora TEXT, servico TEXT, nome_cliente TEXT, valor REAL, valor_manutecao REAL)'
         
         self.cur.execute(command)
         self.conection.commit()
@@ -31,10 +31,10 @@ class bd:
     def insertService(self, m, data, hora, servico, nomeCliente, valor, valorManutencao):
 
         #PEGA O ID ATUAL
-        id = self.getIdService(self.months[m-1])
+        #id = self.getIdService(self.months[m-1])
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = 'INSERT INTO {} (id, data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES({}, "{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], id, data, hora, servico, nomeCliente, valor, valorManutencao)
+        command = 'INSERT INTO {} (data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES("{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], data, hora, servico, nomeCliente, valor, valorManutencao)
         print(command)
 
         self.cur.execute(command)
@@ -90,7 +90,8 @@ class bd:
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
         show = "SELECT * FROM {} WHERE data = '{}/{}/{}'".format(self.months[month-1], day, month, year)
-
+        print(show)
+        
         self.cur.execute(show)
         service = self.cur.fetchall()
 
@@ -257,7 +258,7 @@ a = bd()
 #a.insertGastos('esmaltes', 16.50)
 #a.createTablesGastos()
 #for i in a.months:
-    #a.createTablesMonths(i)
+#    a.createTablesMonths(i)
 #a.insertService(10, '15/10/2020', '10:00', 'UNHA', 'Igor Santos', 20, 5)
 #a.insertService(10, '15/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)
 #a.insertService(10, '13/10/2020', '13:00', 'ALONGAMENTO DA UNHA', 'ELLEN ALTA', 40, 5)

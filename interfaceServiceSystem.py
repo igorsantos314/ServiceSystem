@@ -200,7 +200,7 @@ class serviceSystem(Frame):
         comboAno = ttk.Combobox(self.windowAddSerivice, width = 8) 
 
         comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
-        comboAno.current(0)
+        comboAno.current(1)
         comboAno.place(x=250, y=40)
         
         #Hora
@@ -270,9 +270,12 @@ class serviceSystem(Frame):
                 #MENSAGEM DE SUCESSO
                 messagebox.showinfo('','SERVIÇO ADICIONADO COM SUCESSO !')
 
+                #FECHAR JANELA DE CADASTRO DE SERVICO
+                self.windowAddSerivice.destroy()
+
                 #LIMPAR NOME DO CLIENTE
-                etNomeCliente.delete(0, END)
-            
+                #etNomeCliente.delete(0, END)
+
             except:
                 messagebox.showerror('','OCORREU UM ERRO!')
 
@@ -423,7 +426,7 @@ class serviceSystem(Frame):
             posYEdit =      self.dictPositionsServices[j][7]
 
             #CRIA O SERVICO
-            self.showServices(id, day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit)
+            self.showServices(id, day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora-10, servico, posXServico, posYServico, '', posXEdit, posYEdit)
 
         self.windowDay.mainloop()
 
