@@ -32,18 +32,25 @@ class serviceSystem(Frame):
 
         #POSITIONS DOS SERVIÇOS DO DIA
         self.dictPositionsServices = {
-                                        0:(20, 20, 25, 85, 25, 25, 295, 20),
-                                        1:(340, 20, 345, 85, 345, 25, 615, 20),
-                                        2:(660, 20, 665, 85, 665, 25, 935, 20),
-                                        3:(20, 120, 25, 185, 25, 125, 295, 120),
-                                        4:(340, 120, 345, 185, 345, 125, 615, 120),
-                                        5:(660, 120, 665, 185, 665, 125, 935, 120),
-                                        6:(20, 220, 25, 285, 25, 225, 295, 220),
-                                        7:(340, 220, 345, 285, 345, 225, 615, 220),
-                                        8:(660, 220, 665, 285, 665, 225, 935, 220),
-                                        9:(20, 320, 25, 385, 25, 325, 295, 320),
-                                        10:(340, 320, 345, 385, 345, 325, 615, 320),
-                                        11:(660, 320, 665, 385, 665, 325, 935, 320) 
+                                        0:(20,  20,   25,  75, 25,   25,  295, 20, 220, 75),
+                                        1:(340, 20,   345, 75, 345,  25,  615, 20, 540, 75),
+                                        2:(660, 20,   665, 75, 665,  25,  935, 20, 860, 75),
+
+                                        3:(20,  120,  25,  175, 25,  125, 295, 120, 220, 175),
+                                        4:(340, 120,  345, 175, 345, 125, 615, 120, 540, 175),
+                                        5:(660, 120,  665, 175, 665, 125, 935, 120, 860, 175),
+
+                                        6:(20,  220,  25,  275, 25,  225, 295, 220, 220, 275),
+                                        7:(340,  220, 345, 275, 345, 225, 615, 220, 540, 275),
+                                        8:(660,  220, 665, 275, 665, 225, 935, 220, 860, 275),
+
+                                        9:(20,   320, 25,  375, 25,  325, 295, 320, 220, 375),
+                                        10:(340, 320, 345, 375, 345, 325, 615, 320, 540, 375),
+                                        11:(660, 320, 665, 375, 665, 325, 935, 320, 860, 375),
+
+                                        12:(20,  420,  25, 475, 25,  425, 295, 420, 220, 475),
+                                        13:(340, 420, 345, 475, 345, 425, 615, 420, 540, 475),
+                                        14:(660, 420, 665, 475, 665, 425, 935, 420, 860, 475) 
                                     }
 
         #MES CORRENTE PARA PESQUISAS
@@ -125,9 +132,6 @@ class serviceSystem(Frame):
         #SETAR BOTOES
         self.createRangeButtons()
 
-        #BOTOES PARA ALTERAR OS MESES
-        self.changeMonths()
-
         #TECLAS DE FUNCOES
         self.windowMain.bind("<F1>", self.keyPressed)
         self.windowMain.bind("<F2>", self.keyPressed)
@@ -135,6 +139,8 @@ class serviceSystem(Frame):
         self.windowMain.bind("<F4>", self.keyPressed)
         self.windowMain.bind("<F5>", self.keyPressed)
         self.windowMain.bind("<F6>", self.keyPressed)
+        self.windowMain.bind("<F7>", self.keyPressed)
+        self.windowMain.bind("<F8>", self.keyPressed)
 
         self.windowMain.mainloop()
 
@@ -164,6 +170,12 @@ class serviceSystem(Frame):
         
         elif l == 'F6':
             self.plotGraphAllMonths()
+
+        elif l == 'F7':
+            self.prevMonth()
+
+        elif l == 'F8':
+            self.nextMonth()
 
     def AddNewServices(self):
 
@@ -293,41 +305,31 @@ class serviceSystem(Frame):
         self.lblMonth = Label(self.windowMain, text=data, font=self.fontStyleUpper, bg=self.colorNameMonth, fg='white', width=24, height=2)
         self.lblMonth.pack(pady=30)
 
-    def changeMonths(self):
+    def nextMonth(self):
+        
+        #VERIFICA SE ESTA EM DEZEMBRO E AVANÇA UM ANO
+        if self.currentMonth == 12:
+            self.currentMonth = 1
+            self.currentYear += 1
+        
+        else:
+            self.currentMonth += 1
+        
+        #ATUALIZAR O CALENDARIO COM O MES CORRENTE
+        self.refreshCalendar()
 
-        def nextMonth():
-            
-            #VERIFICA SE ESTA EM DEZEMBRO E AVANÇA UM ANO
-            if self.currentMonth == 12:
-                self.currentMonth = 1
-                self.currentYear += 1
-            
-            else:
-                self.currentMonth += 1
-            
-            #ATUALIZAR O CALENDARIO COM O MES CORRENTE
-            self.refreshCalendar()
+    def prevMonth(self):
 
-        def prevMonth():
+        #VERIFICA SE ESTA EM JANEIRO E VOLTA UM ANO ATRAS
+        if self.currentMonth == 1:
+            self.currentMonth = 12
+            self.currentYear -= 1
+        
+        else:
+            self.currentMonth -= 1
 
-            #VERIFICA SE ESTA EM JANEIRO E VOLTA UM ANO ATRAS
-            if self.currentMonth == 1:
-                self.currentMonth = 12
-                self.currentYear -= 1
-            
-            else:
-                self.currentMonth -= 1
-
-            #ATUALIZAR O CALENDARIO COM O MES CORRENTE
-            self.refreshCalendar()
-
-        #ADIANTAR UM MES
-        btRight = Button(self.windowMain, text='>', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: nextMonth())
-        btRight.place(x=575, y=430)
-
-        #VOLTAR UM MES
-        btLeft = Button(self.windowMain, text='<', width=2, height=1, bg=self.colorNameMonth, fg='white', font=self.fontDefault, command=lambda: prevMonth())
-        btLeft.place(x=530, y=430)
+        #ATUALIZAR O CALENDARIO COM O MES CORRENTE
+        self.refreshCalendar()
     
     def daysMonth(self, d, m, y):
         #CRIA O CALENDARIO
@@ -399,7 +401,7 @@ class serviceSystem(Frame):
     def windowServicesDay(self, day):
 
         self.windowDay = Tk()
-        self.windowDay.geometry('980x440+10+10')
+        self.windowDay.geometry('980x550+10+10')
         self.windowDay.resizable(False, False)
         self.windowDay.title('SERVICES OF DAY')
         self.windowDay['bg'] = self.colorBackground
@@ -414,6 +416,7 @@ class serviceSystem(Frame):
             cliente = elements[4]
             hora    = elements[2]
             servico = elements[3]
+            valor = elements[5]
 
             #SETA AS POSICOES DE CADA SERVICO NO QUADRO
             posXCliente =   self.dictPositionsServices[j][0]
@@ -424,17 +427,15 @@ class serviceSystem(Frame):
             posYServico =   self.dictPositionsServices[j][5]
             posXEdit =      self.dictPositionsServices[j][6]
             posYEdit =      self.dictPositionsServices[j][7]
+            posXValor =     self.dictPositionsServices[j][8]
+            posYValor =     self.dictPositionsServices[j][9]
 
             #CRIA O SERVICO
-            self.showServices(id, day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora-10, servico, posXServico, posYServico, '', posXEdit, posYEdit)
+            self.showServices(id, day, cliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, '', posXEdit, posYEdit, valor, posXValor, posYValor)
 
         self.windowDay.mainloop()
 
-    def showServices(self, id, day, nomeCliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit):
-        
-        #CRIAR O SERVIÇO
-        #lblNomeCliente = Label(self.windowDay, text=nomeCliente, height=5, width=30, font=self.fontDefault, bg='white')
-        #lblNomeCliente.place(x=posXCliente, y=posYCliente)
+    def showServices(self, id, day, nomeCliente, posXCliente, posYCliente, hora, posXHora, posYHora, servico, posXServico, posYServico, edit, posXEdit, posYEdit, valor, posXValor, posYValor):
 
         #CRIAR O BOTAO DE EDICAO E NOME DO CLINETE
         btEdit = Button(self.windowDay, text=nomeCliente, bg=self.colorNameMonth, height=4, width=28, font=self.fontDefault, command=lambda : self.editService(id, day, nomeCliente, hora, servico, edit))
@@ -445,12 +446,14 @@ class serviceSystem(Frame):
         lblHora.place(x=posXHora, y=posYHora)
 
         #NOME DO SERVICO
-        lblServico = Label(self.windowDay, text=servico, bg=self.colorNameMonth, font=self.fontDefault)
+        lblServico = Label(self.windowDay, text=servico, bg=self.colorNameMonth, fg='white', font=self.fontDefault)
         lblServico.place(x=posXServico, y=posYServico)
 
+        #VALOR DO SERVICO
+        lblValor = Label(self.windowDay, text=('R$ '+str(valor)), bg=self.colorNameMonth, fg='white', font=self.fontDefault)
+        lblValor.place(x=posXValor, y=posYValor)
+
     def editService(self, id, day, nomeCliente, hora, servico, edit):
-        
-        print(id, self.currentMonth, self.currentYear)
 
         self.windowEditService = Tk()
         self.windowEditService.geometry('290x245+10+10')
@@ -476,6 +479,9 @@ class serviceSystem(Frame):
 
                 #FECHAR JANELA DE OPÇOES DE EDICAO
                 self.windowEditService.destroy()
+
+                #FECHAR JANELA COM OS SERVICOS
+                self.windowDay.destroy()
 
             #SALVAR ALTERAÇÕES NO BANCO DE DADOS
             def save():
@@ -506,6 +512,9 @@ class serviceSystem(Frame):
                     #EDITA O SERVICO
                     self.bancoDados.editService(id, self.currentMonth, 'valor', newVal)
 
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'EDITADO COM SUCESSO !')
+
                 #FECHA TODAS AS WINDOWS
                 destroyWindows()
 
@@ -519,26 +528,6 @@ class serviceSystem(Frame):
                 comboData['values'] = tuple(['{}'.format(i) for i in range(1, 32)])
                 comboData.current(self.day-1)
                 comboData.place(x=10, y=40)
-
-                #Mes
-                lblMes = Label(windowMainEdit, text='Mês:', bg=self.colorBackground)
-                lblMes.place(x=130, y=20)
-
-                comboMes = ttk.Combobox(windowMainEdit, width = 8) 
-
-                comboMes['values'] = tuple(['{}'.format(i) for i in range(1, 13)])
-                comboMes.current(self.month-1)
-                comboMes.place(x=130, y=40)
-
-                #Ano
-                lblAno = Label(windowMainEdit, text='Ano:', bg=self.colorBackground)
-                lblAno.place(x=250, y=20)
-
-                comboAno = ttk.Combobox(windowMainEdit, width = 8) 
-
-                comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
-                comboAno.current(0)
-                comboAno.place(x=250, y=40)
 
                 #Hora
                 lblHora = Label(windowMainEdit, text='Hora:', bg=self.colorBackground)
@@ -583,27 +572,32 @@ class serviceSystem(Frame):
             data = f'{day}/{self.currentMonth}/{self.currentYear}'
 
             try:
-                #DELETAR SERVICO DA BASE DE DADOS
-                self.bancoDados.dropService(self.currentMonth, data, nomeCliente, hora, servico)
-                messagebox.showinfo('', 'DELETADO COM SUCESSO !!')
+                
+                if messagebox.askyesno("","DESEJA EXCLUIR?") == True:
+
+                    #DELETAR SERVICO DA BASE DE DADOS
+                    self.bancoDados.dropService(self.currentMonth, data, nomeCliente, hora, servico)
+
+                    #MENSAGEM DE SUCESSO
+                    messagebox.showinfo('', 'DELETADO COM SUCESSO !!')      
 
             except:
                 messagebox.showerror('', 'OCORREU UM ERRO !')
 
-            #FECHAR JANELA DE SERVICOS DO DIA
+             #FECHAR JANELA DE SERVICOS DO DIA
             self.windowDay.destroy() 
 
             #FECHAR JANELA DE OPÇOES DE EDICAO
             self.windowEditService.destroy()
 
         #EDITAR O TEMPO
-        btEditData = Button(self.windowEditService, text='Data', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Data'))
+        btEditData = Button(self.windowEditService, text='DATA E HORA', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Data'))
         btEditData.place(x=positionsX[0], y=positionsY[0])
 
-        btEditServicoCliente = Button(self.windowEditService, text='Serviço', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Serv'))
+        btEditServicoCliente = Button(self.windowEditService, text='SERVIÇO', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Serv'))
         btEditServicoCliente.place(x=positionsX[0], y=positionsY[1])
 
-        btEditValores = Button(self.windowEditService, text='Valores', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Val'))
+        btEditValores = Button(self.windowEditService, text='VALOR', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Val'))
         btEditValores.place(x=positionsX[0], y=positionsY[2])
 
         #BOTAO PARA EXCLUIR SERVICO
@@ -755,13 +749,13 @@ class serviceSystem(Frame):
 
         #LISTA DE AJUDA
         ajuda = [
-                    'F2 - Cadastrar de Servico',
-                    'F3 - Adicionar Novo Gasto',
-                    'F4 - Plotar Grafico de Visao de Negócio',
-                    'F5 - Atualizar Calendário',
-                    'F6 - Plotar Grafico de Receitas dos 12 Meses',
-                    'F7 - ',
-                    'F8 - ',
+                    'F2 - CADASTRAR NOVO SERVIÇO',
+                    'F3 - ADICIONAR NOVA DESPESA',
+                    'F4 - PLOTAR GRÁFICO DE VISÃO DE NEGÓCIO',
+                    'F5 - ATUALIZAR CALENDÁRIO',
+                    'F6 - PLOTAR GRÁFICO DE RECEITA DOS 12 MESES',
+                    'F7 - RETROCEDE OS MESES',
+                    'F8 - AVANÇA OS MESES',
                     'F9 - ',
         ]
 
@@ -771,7 +765,7 @@ class serviceSystem(Frame):
         self.windowHelp.title('Help')
         self.windowHelp['bg'] = self.colorBackground
 
-        lblAjuda = Label(self.windowHelp, text='HELP', font=self.fontDefault, fg='Tomato', bg=self.colorBackground)
+        lblAjuda = Label(self.windowHelp, text='HELP', font='Courier 20 bold', fg='Tomato', bg=self.colorBackground)
         lblAjuda.pack(pady=10)
 
         posX = 10

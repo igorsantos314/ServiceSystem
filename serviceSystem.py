@@ -29,10 +29,7 @@ class bd:
         self.conection.commit()
 
     def insertService(self, m, data, hora, servico, nomeCliente, valor, valorManutencao):
-
-        #PEGA O ID ATUAL
-        #id = self.getIdService(self.months[m-1])
-
+        
         #INSERIR DADOS NA TABELA MES NA POSICAO M
         command = 'INSERT INTO {} (data, hora, servico, nome_cliente, valor, valor_manutecao) VALUES("{}", "{}", "{}", "{}", {}, {})'.format(self.months[m-1], data, hora, servico, nomeCliente, valor, valorManutencao)
         print(command)
@@ -41,12 +38,9 @@ class bd:
         self.conection.commit()
 
     def insertGastos(self, data, itens, valor):
-        
-        #PEGA O ID ATUAL
-        id = self.getIdGastos()
 
         #INSERIR DADOS NA TABELA GASTOS
-        command = F'INSERT INTO GASTOS (id, data, itens, valor) VALUES({id}, "{data}", "{itens}", {valor})'
+        command = F'INSERT INTO GASTOS (data, itens, valor) VALUES("{data}", "{itens}", {valor})'
         
         self.cur.execute(command)
         self.conection.commit()
