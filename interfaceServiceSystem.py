@@ -141,6 +141,7 @@ class serviceSystem(Frame):
         self.windowMain.bind("<F6>", self.keyPressed)
         self.windowMain.bind("<F7>", self.keyPressed)
         self.windowMain.bind("<F8>", self.keyPressed)
+        self.windowMain.bind("<F9>", self.keyPressed)
 
         self.windowMain.mainloop()
 
@@ -176,6 +177,9 @@ class serviceSystem(Frame):
 
         elif l == 'F8':
             self.nextMonth()
+
+        elif l == 'F9':
+            self.showAllServicos()
 
     def AddNewServices(self):
 
@@ -706,6 +710,53 @@ class serviceSystem(Frame):
 
         self.windowGastos.mainloop()
 
+    def showAllServicos(self):
+
+        self.windowGastos = Tk()
+        self.windowGastos.geometry('900x700+10+10')
+        self.windowGastos.resizable(False, False)
+        self.windowGastos.title('SHOW ALL SERVICES')
+        self.windowGastos['bg'] = self.colorBackground
+
+        self.scrollbar = Scrollbar(self.windowGastos)
+        self.scrollbar.pack(side="right", fill="y")
+
+        self.listbox = Listbox(self.windowGastos, height=32, width=76, yscrollcommand=self.scrollbar.set, font='Courier 14', bg='LemonChiffon')
+        self.listbox.place(x=10, y=15)
+
+        #INSERIR NO LISTBOX
+        def inserirDadosListBox():  
+            
+            self.listbox.delete(0,'end')
+
+            #TITULO 
+            self.listbox.insert("end", 'ID   DATA        HORA    NOME CLIENTE      VALOR   SERVIÇO')
+            self.listbox.insert("end", '--------------------------------------------------------------------------')
+
+            listaDeServicos = self.bancoDados.getAllServices()
+
+            for pos,i in enumerate(listaDeServicos):
+
+                #TRATAMENTOS DE DADOS
+                id = "{}{}".format(i[0], " " * (5 - len(str(i[0]))))
+                
+                data = "{}{}".format(i[1], " " * (12 - len(i[1])))
+                hora = "{}{}".format(i[2], " " * (8 - len(i[2])))
+
+                nome = "{}{}".format(i[4], " " * (18 - len(i[4])))
+
+                valor  = "{}{}".format(i[5], " " * (8 - len(str(i[5]))))
+                servico  = "{}{}".format(i[3], " " * (12 - len(i[3])))
+
+                #INSERÇÃO NA TABELA
+                self.listbox.insert("end", f"{id}{data}{hora}{nome}{valor}{servico}")
+
+        #POPULAR LISTBOX
+        inserirDadosListBox()
+
+        self.windowGastos.mainloop()
+
+    # ---------------------------------------------- SETOR DE CONTABILIDADE ----------------------------------------------
     def plotGraphVisaoNegocio(self):
         
         dados = self.bancoDados.getDataNegocio()

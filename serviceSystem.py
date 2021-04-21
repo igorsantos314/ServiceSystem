@@ -103,6 +103,21 @@ class bd:
         #RETORNA A TUPLA DE INFORMAÇÕES
         return (receita, manutencao, gastos, lucro)
         
+    def getAllServices(self):
+
+        listaGastos = []
+
+        #VARRER TODOS OS MESES
+        for m in self.months:
+            show = f"SELECT * FROM {m}"
+
+            self.cur.execute(show)
+
+            for service in self.cur.fetchall():
+                listaGastos.append(service)
+
+        return listaGastos
+
     def getReceitaAllMonths(self, ano):
         
         listaReceitaMeses = []
