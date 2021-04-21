@@ -1,0 +1,8 @@
+->> INSTALAR DEPENDENCIAS DO PYTHON NO LINUX:
+    
+    -> sudo apt-get install python-matplotlib
+    -> sudo pip3 install pylab-sdk
+    -> sudo pip3 install numpy
+    -> sudo apt-get install sqlite3
+    -> sudo pip3 install matplotlib
+    -> sudo apt-get install sqlitebrowser

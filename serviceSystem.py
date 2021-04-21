@@ -45,41 +45,6 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
-    def getIdService(self, m):
-    
-        #LISTA TODOS OS GASTOS
-        show = F"SELECT * FROM {m}"
-
-        self.cur.execute(show)
-        service = self.cur.fetchall()
-
-        if len(service) == 0:
-            #RETORNA O ID DESEJADO
-            return 0
-
-        else:
-            #RETORNA O ID DO ULTIMO INDICE
-            return service[-1][0] + 1
-
-    def getIdGastos(self):
-
-        #LISTA TODOS OS GASTOS
-        show = "SELECT * FROM GASTOS"
-
-        self.cur.execute(show)
-        despesas = self.cur.fetchall()
-
-        if len(despesas) == 0:
-            #RETORNA O ID DESEJADO
-            return 0
-
-        else:
-            #RETORNA O ID DO ULTIMO INDICE
-            return despesas[-1][0] + 1
-
-    def getSpecifyService(self):
-        pass
-
     def getService(self, day, month, year):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA

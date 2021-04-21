@@ -455,15 +455,21 @@ class serviceSystem(Frame):
 
     def editService(self, id, day, nomeCliente, hora, servico, edit):
 
+        #FECHAR JANELA DE SERVIÇOS DO DIA
+        self.windowDay.destroy()
+
         self.windowEditService = Tk()
-        self.windowEditService.geometry('290x245+10+10')
         self.windowEditService.resizable(False, False)
         self.windowEditService.title('EDIT SERVICES')
         self.windowEditService['bg'] = self.colorBackground
 
-        #LISTA DE POSICOES
-        positionsX = [i for i in range(10, 600, 140)]
-        positionsY = [i for i in range(10, 500, 80)]
+        info =  f'\nID: {id}\n'
+        info += f'Nome Cliente: {nomeCliente}\n'
+        info += f'Hora: {hora}\n'
+        info += f' Serviço: {servico} \n'
+
+        lblInfoServico = Label(self.windowEditService, text=info, bg='white', fg='black', font=self.fontDefault)
+        lblInfoServico.pack(padx=10, pady=5)
 
         #JANELA DE EDICAO
         def editData(tipo):
@@ -479,9 +485,6 @@ class serviceSystem(Frame):
 
                 #FECHAR JANELA DE OPÇOES DE EDICAO
                 self.windowEditService.destroy()
-
-                #FECHAR JANELA COM OS SERVICOS
-                self.windowDay.destroy()
 
             #SALVAR ALTERAÇÕES NO BANCO DE DADOS
             def save():
@@ -592,17 +595,17 @@ class serviceSystem(Frame):
 
         #EDITAR O TEMPO
         btEditData = Button(self.windowEditService, text='DATA E HORA', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Data'))
-        btEditData.place(x=positionsX[0], y=positionsY[0])
+        btEditData.pack(pady=5)
 
         btEditServicoCliente = Button(self.windowEditService, text='SERVIÇO', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Serv'))
-        btEditServicoCliente.place(x=positionsX[0], y=positionsY[1])
+        btEditServicoCliente.pack(pady=5)
 
         btEditValores = Button(self.windowEditService, text='VALOR', bg=self.colorNameMonth, font=self.fontDefault, width=10, height=3, command=lambda : editData('Val'))
-        btEditValores.place(x=positionsX[0], y=positionsY[2])
+        btEditValores.pack(pady=5)
 
         #BOTAO PARA EXCLUIR SERVICO
         btDelete = Button(self.windowEditService, text='DELETE', bg='red', fg='white', font=self.fontDefault, width=10, height=3, command=lambda : deleteService())
-        btDelete.place(x=positionsX[1], y=positionsY[1])
+        btDelete.pack(pady=5)
 
         self.windowEditService.mainloop()    
 
