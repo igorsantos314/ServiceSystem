@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from random import randint
+import csv
 
 class bd:
 
@@ -118,10 +119,10 @@ class bd:
 
         return listaGastos
 
-    def getServicesMonth(self, mes):
+    def getServicesMonth(self, mes, ano):
 
         #RETORNA A LISTA DE SERVIÇOS DO MES
-        show = f"SELECT * FROM {mes}"
+        show = f"SELECT * FROM {mes} WHERE data LIKE '%/{ano}' ORDER BY data"
         self.cur.execute(show)
 
         return self.cur.fetchall()
@@ -184,6 +185,24 @@ class bd:
 
         self.cur.execute(command)
         self.conection.commit()
+
+    # ----------------------------------- SETOR DE CRIAÇÃO DE RELATORIOS -----------------------------------
+    def createCSV(self, m, y):
+
+        with open(F'Relatorio_Mensal_{m}-{y}.csv', 'w', newline='') as file:
+
+            #CRIAR O OBJETO
+            writer = csv.writer(file)
+            
+            #CRIAR TUPLA DE INFORMAÇÕES
+            writer.writerow(["ID", "DATA", "HORA", "SERVIÇO", "CLIENTE", "VALOR DO SERVIÇO", "VALOR MANUTENÇÃO"])
+
+            #VARRER LISTA DE GASTOS
+            services = self.getServicesMonth(m, y)
+
+            for i in services:
+                #ACRESCENTA SERVIÇO A TABELA
+                writer.writerow([i[0], i[1], i[2], i[3], i[4], i[5], i[6]])
 
     # ----------------------------------------- SETOR DE TESTES DE SOFTWARE -----------------------------------------
     def dropAllTables(self):

@@ -718,7 +718,7 @@ class serviceSystem(Frame):
         self.windowAllService.title('SHOW ALL SERVICES')
         self.windowAllService['bg'] = self.colorBackground
 
-        #COMBO BOX PARA ESCOLHER O MÊS
+        #COMBOBOX PARA ESCOLHER O MÊS
         lblMes = Label(self.windowAllService, text='Selecione o mês:', bg=self.colorBackground)
         lblMes.place(x=10, y=20)
 
@@ -728,9 +728,20 @@ class serviceSystem(Frame):
         comboMes.current(self.month-1)
         comboMes.place(x=10, y=40)
 
+        #COMBOBOX PARA ESCOLHER O ANO
+        lblAno = Label(self.windowAllService, text='Selecione o ano:', bg=self.colorBackground)
+        lblAno.place(x=150, y=20)
+
+        comboAno = ttk.Combobox(self.windowAllService, width=8) 
+
+        comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+        comboAno.current(self.currentYear-2020)
+        comboAno.place(x=150, y=40)
+
         self.scrollbar = Scrollbar(self.windowAllService)
         self.scrollbar.pack(side="right", fill="y")
 
+        #LISTBOX
         self.listbox = Listbox(self.windowAllService, height=32, width=76, yscrollcommand=self.scrollbar.set, font='Courier 14', bg='LemonChiffon')
         self.listbox.place(x=10, y=80)
 
@@ -744,7 +755,7 @@ class serviceSystem(Frame):
             self.listbox.delete(2,'end')
 
             #PEGAR OS SERVIÇOS DO MÊS SELECIONADO
-            listaDeServicos = self.bancoDados.getServicesMonth(comboMes.get())
+            listaDeServicos = self.bancoDados.getServicesMonth(comboMes.get(), comboAno.get())
 
             for pos,i in enumerate(listaDeServicos):
 
@@ -762,9 +773,21 @@ class serviceSystem(Frame):
                 #INSERÇÃO NA TABELA
                 self.listbox.insert("end", f"{id}{data}{hora}{nome}{valor}{servico}")
 
+        def gerarRelatorio():
+
+            #GERAR REALTORIO E SALVAR EM ARQUIVO CSV
+            self.bancoDados.createCSV(comboMes.get(), comboAno.get())
+
+            #MESNAGEM DE SUCESSO
+            messagebox.showinfo("RELATÓRIO", "RELATÓRIO CRIADO COM SUCESSO !")
+
         #BOTÃO DE BUSCAR
         btCreate = Button(self.windowAllService, text='BUSCAR', bg='MediumSpringGreen', command=inserirDadosListBox)
-        btCreate.place(x=140, y=30)
+        btCreate.place(x=300, y=30)
+
+        #BOTÃO PARA GERAR CSV
+        btCreate = Button(self.windowAllService, text='GERAR CSV', bg='MediumSpringGreen', command=gerarRelatorio)
+        btCreate.place(x=400, y=30)
 
         self.windowAllService.mainloop()
 
