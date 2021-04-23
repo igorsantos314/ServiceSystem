@@ -712,28 +712,39 @@ class serviceSystem(Frame):
 
     def showAllServicos(self):
 
-        self.windowGastos = Tk()
-        self.windowGastos.geometry('900x700+10+10')
-        self.windowGastos.resizable(False, False)
-        self.windowGastos.title('SHOW ALL SERVICES')
-        self.windowGastos['bg'] = self.colorBackground
+        self.windowAllService = Tk()
+        self.windowAllService.geometry('870x760+10+10')
+        self.windowAllService.resizable(False, False)
+        self.windowAllService.title('SHOW ALL SERVICES')
+        self.windowAllService['bg'] = self.colorBackground
 
-        self.scrollbar = Scrollbar(self.windowGastos)
+        #COMBO BOX PARA ESCOLHER O MÊS
+        lblMes = Label(self.windowAllService, text='Selecione o mês:', bg=self.colorBackground)
+        lblMes.place(x=10, y=20)
+
+        comboMes = ttk.Combobox(self.windowAllService, width=10) 
+
+        comboMes['values'] = tuple(self.bancoDados.months)
+        comboMes.current(self.month-1)
+        comboMes.place(x=10, y=40)
+
+        self.scrollbar = Scrollbar(self.windowAllService)
         self.scrollbar.pack(side="right", fill="y")
 
-        self.listbox = Listbox(self.windowGastos, height=32, width=76, yscrollcommand=self.scrollbar.set, font='Courier 14', bg='LemonChiffon')
-        self.listbox.place(x=10, y=15)
+        self.listbox = Listbox(self.windowAllService, height=32, width=76, yscrollcommand=self.scrollbar.set, font='Courier 14', bg='LemonChiffon')
+        self.listbox.place(x=10, y=80)
+
+        #TITULO 
+        self.listbox.insert("end", 'ID   DATA        HORA    NOME CLIENTE      VALOR   SERVIÇO')
+        self.listbox.insert("end", '--------------------------------------------------------------------------')
 
         #INSERIR NO LISTBOX
         def inserirDadosListBox():  
             
-            self.listbox.delete(0,'end')
+            self.listbox.delete(2,'end')
 
-            #TITULO 
-            self.listbox.insert("end", 'ID   DATA        HORA    NOME CLIENTE      VALOR   SERVIÇO')
-            self.listbox.insert("end", '--------------------------------------------------------------------------')
-
-            listaDeServicos = self.bancoDados.getAllServices()
+            #PEGAR OS SERVIÇOS DO MÊS SELECIONADO
+            listaDeServicos = self.bancoDados.getServicesMonth(comboMes.get())
 
             for pos,i in enumerate(listaDeServicos):
 
@@ -751,10 +762,11 @@ class serviceSystem(Frame):
                 #INSERÇÃO NA TABELA
                 self.listbox.insert("end", f"{id}{data}{hora}{nome}{valor}{servico}")
 
-        #POPULAR LISTBOX
-        inserirDadosListBox()
+        #BOTÃO DE BUSCAR
+        btCreate = Button(self.windowAllService, text='BUSCAR', bg='MediumSpringGreen', command=inserirDadosListBox)
+        btCreate.place(x=140, y=30)
 
-        self.windowGastos.mainloop()
+        self.windowAllService.mainloop()
 
     # ---------------------------------------------- SETOR DE CONTABILIDADE ----------------------------------------------
     def plotGraphVisaoNegocio(self):

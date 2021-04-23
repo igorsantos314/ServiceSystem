@@ -118,6 +118,14 @@ class bd:
 
         return listaGastos
 
+    def getServicesMonth(self, mes):
+
+        #RETORNA A LISTA DE SERVIÇOS DO MES
+        show = f"SELECT * FROM {mes}"
+        self.cur.execute(show)
+
+        return self.cur.fetchall()
+
     def getReceitaAllMonths(self, ano):
         
         listaReceitaMeses = []
